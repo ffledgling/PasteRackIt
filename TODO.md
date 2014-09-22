@@ -5,3 +5,5 @@ There's a lot more that can be done.
 - [ ] Proper error handling, informative exceptions/errors.
 - [ ] Add support for network proxies.
 - [ ] Integrate into DrRacket.
+- [ ] See inside for mini-TODOs.
+- [ ] Add tests.

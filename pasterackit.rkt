@@ -39,6 +39,7 @@
 ; (upload-contents content) -> string?
 ; content: string?
 
+;; TODO: Replace post-data append+list+cond with quasi-quoting
 (define (upload-contents content)
   (let*
     ([base-url (string->url "http://www.pasterack.org")]
