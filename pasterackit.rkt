@@ -30,13 +30,10 @@
 ; filename: (or/c string? null?)
 
 (define (get-contents filename)
-  (if (null? filename)
-    ; Read from STDIN
-    (apply string (sequence->list (in-port read-char (current-input-port))))
-    ; Read from FILE
-    (if (file-exists? filename) 
-      (file->string filename #:mode 'text)
-      (error "Error: File does not exist"))))
+  (cond
+    [(null? filename) (apply string (sequence->list (in-port read-char (current-input-port))))]
+    [(file-exists? filename) (file->string filename #:mode 'text)]
+    [else (error "Error: File does not exist")]))
 
 ;; Uploads "content" to http://pasterack.org
 ; (upload-contents content) -> string?
@@ -44,14 +41,14 @@
 
 (define (upload-contents content)
   (let*
-    ([base_url (string->url "http://www.pasterack.org")]
-     [post_action (last 
+    ([base-url (string->url "http://www.pasterack.org")]
+     [post-action (last
                     (regexp-match 
                       (pregexp "action=\"(.*?)\"")
-                      (call/input-url base_url
+                      (call/input-url base-url
                                       get-pure-port
                                       port->string)))]
-     [post_data (string->bytes/utf-8
+     [post-data (string->bytes/utf-8
                   (alist->form-urlencoded
                     (append 
                       (list
@@ -64,12 +61,9 @@
                       (if (no-eval) (list (cons 'astext "off")) empty)
                       (if (alert-irc) (list (cons 'irc "off")) empty))))]
 
-     [post_url (combine-url/relative base_url post_action)]
-     [response_port (post-pure-port post_url post_data)])
-    (last (regexp-match (pregexp "location\\.href=\\\"(.*?)\\\"") (port->string response_port)))))
+     [post-url (combine-url/relative base-url post-action)]
+     [response-port (post-pure-port post-url post-data)])
+    (last (regexp-match (pregexp "location\\.href=\\\"(.*?)\\\"") (port->string response-port)))))
 
 ;; Print the paste's URL
-(display 
-  (string-append
-    (upload-contents (get-contents filename))
-    "\n"))
+(printf "~a~n" (upload-contents (get-contents filename)))
