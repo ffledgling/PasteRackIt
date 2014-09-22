@@ -4,12 +4,16 @@
          net/uri-codec
          racket/cmdline)
 
+;; Initialize parameter defaults
 
 (define poster (make-parameter ""))
 (define title (make-parameter ""))
 (define no-eval (make-parameter #f))
 (define alert-irc (make-parameter #f))
 
+
+;; Parse command-line args and set parameters accordingly
+; filename: (or/c string? null?)
 (define filename
   (command-line
     #:once-each 
@@ -20,8 +24,10 @@
     #:args ([fname null])
     fname))
 
-; Reads a file or from stdin depending on CLI args
-; (or/c string? null?) -> string?
+
+;; Reads a file or from stdin depending on CLI args
+; (get-contents filename) -> string?
+; filename: (or/c string? null?)
 
 (define (get-contents filename)
   (if (null? filename)
@@ -32,8 +38,9 @@
       (file->string filename #:mode 'text)
       (error "Error: File does not exist"))))
 
-; Upload function
-; (string?) -> string?
+;; Uploads "content" to http://pasterack.org
+; (upload-contents content) -> string?
+; content: string?
 
 (define (upload-contents content)
   (let*
@@ -61,8 +68,8 @@
      [response_port (post-pure-port post_url post_data)])
     (last (regexp-match (pregexp "location\\.href=\\\"(.*?)\\\"") (port->string response_port)))))
 
+;; Print the paste's URL
 (display 
   (string-append
     (upload-contents (get-contents filename))
     "\n"))
-;(get-contents filename)
