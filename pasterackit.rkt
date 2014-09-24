@@ -12,11 +12,10 @@
 (define alert-irc (make-parameter #f))
 
 ;; Initialize Proxy
-;(printf "Detecting and setting proxy, if any.~n")
 
-; Don't ask how I wrote this, TODO: Clean this mess up
+; Don't ask how I wrote this
+; TODO: Clean this mess up, aka make this readable.
 (let ([proxy-env (getenv "http_proxy")])
-; (printf "Proxy-Env: ~a~n" proxy-env)
   (if (eq? proxy-env #f) (void)
     (let*
       ([proxy-server (rest (regexp-match (pregexp "(.*?)://(.*?):([\\d]*)") proxy-env))]
