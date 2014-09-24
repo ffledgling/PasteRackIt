@@ -11,6 +11,20 @@
 (define no-eval (make-parameter #f))
 (define alert-irc (make-parameter #f))
 
+;; Initialize Proxy
+;(printf "Detecting and setting proxy, if any.~n")
+
+; Don't ask how I wrote this, TODO: Clean this mess up
+(let ([proxy-env (getenv "http_proxy")])
+; (printf "Proxy-Env: ~a~n" proxy-env)
+  (if (eq? proxy-env #f) (void)
+    (let*
+      ([proxy-server (rest (regexp-match (pregexp "(.*?)://(.*?):([\\d]*)") proxy-env))]
+       [proxy (if (eq? (length proxy-server) 3) proxy-server null)])
+      (if (null? proxy) (void)
+        (current-proxy-servers
+          (list (list (first proxy) (second proxy) (string->number (third proxy)))))))))
+
 
 ;; Parse command-line args and set parameters accordingly
 ; filename: (or/c string? null?)
